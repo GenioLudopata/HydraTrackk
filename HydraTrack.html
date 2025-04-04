@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydraTrack - Tu Asistente de Hidratación</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        h1 i {
+            color: #3498db;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        #progressContainer {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 15px 0;
+            height: 25px;
+            overflow: hidden;
+        }
+        #progressBar {
+            width: 0%;
+            height: 100%;
+            background-color: #2ecc71;
+            transition: width 0.5s ease;
+        }
+        #waterIntake, #dailyGoal {
+            font-weight: bold;
+            color: #3498db;
+        }
+        #reminder {
+            background-color: #f1c40f;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-tint"></i>HydraTrack</h1>
+        
+        <div class="input-group">
+            <label for="weight">Peso (kg):</label>
+            <input type="number" id="weight" placeholder="Ingresa tu peso">
+            <button class="btn" onclick="setDailyGoal()">Calcular Consumo Diario</button>
+        </div>
+
+        <div id="waterTracker" style="display:none;">
+            <p>Meta diaria: <span id="dailyGoal"></span> ml</p>
+            
+            <div id="progressContainer">
+                <div id="progressBar"></div>
+            </div>
+
+            <p>Consumido: <span id="waterIntake">0</span> ml</p>
+            
+            <button class="btn" onclick="addWater()">
+                <i class="fas fa-glass-whiskey"></i> Registrar Vaso (250 ml)
+            </button>
+
+            <div id="reminder">
+                <i class="fas fa-bell"></i> ¡Es hora de beber agua!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dailyGoal = 0;
+        let waterIntake = 0;
+
+        function setDailyGoal() {
+            const weightInput = document.getElementById('weight');
+            const weight = parseFloat(weightInput.value);
+            
+            if (isNaN(weight) || weight <= 0) {
+                alert('Por favor ingresa un peso válido');
+                return;
+            }
+
+            dailyGoal = Math.round(weight * 35);
+            document.getElementById('dailyGoal').textContent = dailyGoal + ' ml';
+            document.getElementById('waterTracker').style.display = 'block';
+            
+            startReminderTimer();
+        }
+
+        function addWater() {
+            waterIntake += 250;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const progressBar = document.getElementById('progressBar');
+            const waterIntakeSpan = document.getElementById('waterIntake');
+            
+            const percentage = Math.min((waterIntake / dailyGoal) * 100, 100);
+            progressBar.style.width = percentage + '%';
+            waterIntakeSpan.textContent = waterIntake;
+
+            if (waterIntake >= dailyGoal) {
+                alert('¡Felicidades! Has alcanzado tu meta diaria de hidratación.');
+            }
+        }
+
+        function startReminderTimer() {
+            // Recordatorio cada 2 horas
+            setInterval(showReminder, 2 * 60 * 60 * 1000);
+        }
+
+        function showReminder() {
+            const reminder = document.getElementById('reminder');
+            reminder.style.display = 'block';
+            
+            setTimeout(() => {
+                reminder.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
